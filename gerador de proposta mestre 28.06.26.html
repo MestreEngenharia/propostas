@@ -105,9 +105,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 #status.load{background:#EFF6FF;border-color:#BFDBFE;color:var(--navy)}
 #status.ok{background:#F0FDF4;border-color:#BBF7D0;color:#166534}
 #status.err{background:#FEF2F2;border-color:#FECACA;color:#991B1B}
-.spin{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(6,37,61,.15);border-top-color:var(--navy);border-radius:50%;animation:sp .75s linear infinite;vertical-align:middle;margin-right:6px}
+.spin{-display:inline-block;width:16px;height:16px;border:2.5px solid rgba(6,37,61,.15);border-top-color:var(--navy);border-radius:50%;animation:sp .75s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes sp{to{transform:rotate(360deg)}}
-.dl-links{display:flex;gap:9px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.dl-links}{display:flex;gap:9px;justify-content:center;margin-top:12px;flex-wrap:wrap}
 .dl-btn{padding:9px 20px;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;border:none;text-decoration:none;display:inline-block;font-family:inherit}
 .dl-primary{background:var(--navy);color:#fff}
 .dl-secondary{background:#F3F4F6;color:var(--text);border:1px solid var(--border)}
@@ -117,7 +117,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 #setup-ov.show{display:flex}
 .sbox{background:#fff;border-radius:16px;padding:28px;max-width:440px;width:90%}
 .sbox h2{color:var(--navy);font-size:1.05rem;font-weight:700;margin-bottom:8px}
-.sbox p{font-size:.8rem;color:var(--muted);margin-bottom:16px;line-height:1.55}
+.sbox p{font-size:.8rem;color:var(--muted);margin-bottom:16px;line-height:1.55}
 .sbox .field{margin-bottom:14px}
 .sbox small{display:block;font-size:.68rem;color:var(--muted);margin-top:4px}
 #logo-prev{max-height:56px;max-width:220px;display:none;margin-top:8px;border:1px solid var(--border);border-radius:6px;padding:4px}
@@ -126,18 +126,20 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 .tab.active{background:var(--navy);color:#fff}
 .hdr-logo{display:flex;align-items:center;flex-shrink:0}
 .hdr-sep{width:1px;height:36px;background:rgba(255,255,255,.15);margin:0 8px}
-</style>
-</head>
+<
+؉lke}
+<head>
 <body>
 
 <div id="_docx-aviso" style="display:none;background:#FEF2F2;border-bottom:2px solid #FECACA;padding:10px 20px;text-align:center;font-size:.82rem;color:#991B1B;font-family:'Segoe UI',sans-serif">
-  ⚠ Biblioteca de geração .docx não carregou. Verifique sua conexão com a internet e recarregue a página (F5).
+  ⚘ Biblioteca de geração .docx não carregou. Verifique sua conexão com a internet e recarregue a página (F5).
 </div>
+
 
 <div id="setup-ov">
   <div class="sbox">
     <h2>Configuração</h2>
-    <div class="tabs">
+  <div class="tabs">
       <button class="tab active" onclick="setupTab('key',this)">Chave da API</button>
       <button class="tab" onclick="setupTab('logo',this)">Logo</button>
     </div>
@@ -230,12 +232,27 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 </div>
 
 <!-- 4. HONORÁRIOS -->
-<div class="card">
+<div class="card" id="honorarios-card">
   <div class="sec-hdr"><span class="sec-ico">💰</span><span class="sec-ttl">Honorários e Pagamento</span></div>
   <div class="field">
+    <label>Modo de preço</label>
+    <div class="chips" style="margin-top:6px">
+      <span class="chip sel" id="modo-unico" onclick="setModoPreco('unico',this)">Valor único</span>
+      <span class="chip" id="modo-planos" onclick="setModoPreco('planos',this)">3 Planos — Mestre 30D / 15D / 7D</span>
+    </div>
+  </div>
+  <div id="area-unico" class="field">
     <label>Valor Total</label>
     <input type="text" id="valor" placeholder="ex: 3.500,00" oninput="fmtValor(this)" onfocus="garantirRS(this)">
     <div class="price-chips" id="price-chips"></div>
+  </div>
+  <div id="area-planos" style="display:none">
+    <p class="hint" style="margin-bottom:10px">Prazos fixos: 30D = vistoria 10d + laudo 30d · 15D = vistoria 5d + laudo 15d · 7D = vistoria 2d + laudo 7d</p>
+    <div class="row3" style="margin-bottom:14px">
+      <div><label>Mestre 30D <span class="lbl-opt">Econômico</span></label><input type="text" id="plano30" placeholder="ex: R$ 5.490,00" oninput="fmtValor(this)" onfocus="garantirRS(this)"></div>
+      <div><label>Mestre 15D <span class="lbl-opt">Padrão</span></label><input type="text" id="plano15" placeholder="ex: R$ 6.830,00" oninput="fmtValor(this)" onfocus="garantirRS(this)"></div>
+      <div><label>Mestre 7D <span class="lbl-opt">Prioritário</span></label><input type="text" id="plano7" placeholder="ex: R$ 8.490,00" oninput="fmtValor(this)" onfocus="garantirRS(this)"></div>
+    </div>
   </div>
   <div class="field">
     <label>Forma de Pagamento</label>
@@ -332,7 +349,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 var TIPOS = {
   avaliacao_imovel:{label:'Avaliação de Imóveis',titulo:'Proposta de honorários',apres:'padrao',prazo_def:'15 dias úteis após a realização da vistoria técnica',val_def:30,escopo:['Etapa 1: Solicitação e análise de documentos do imóvel, bem como coleta de informações complementares junto ao contratante;','Etapa 2: Vistoria técnica presencial no imóvel para levantamento das características construtivas, de uso e localização;','Etapa 3: Pesquisa de dados de mercado e coleta de amostras comparativas, conforme critérios e exigências da NBR 14653;','Etapa 4: Processamento dos dados e realização dos cálculos técnicos utilizando a metodologia definida na Norma de Avaliação de Bens da ABNT;','Etapa 5: Elaboração do Laudo de Avaliação Técnica, com emissão da Anotação de Responsabilidade Técnica (ART) junto ao CREA.'],hon:'O valor do presente serviço foi definido com base na complexidade das etapas envolvidas, considerando o tempo técnico necessário, realização de vistoria presencial, pesquisa de mercado, tratamento dos dados, elaboração do laudo e emissão da ART. A composição dos honorários segue os parâmetros de referência estabelecidos pelo SENGE-SC e pelo IBAPE-SC.',entrega:'O laudo de avaliação do imóvel será entregue em formato digital (.pdf), acompanhado da respectiva ART registrada no CREA.',precos:[{l:'Avaliação urbano simples (8h)',v:'R$ 1.204,00'},{l:'Avaliação urbano complexo (20h)',v:'R$ 3.013,00'},{l:'Avaliação rural ±50 ha (24h)',v:'R$ 3.616,00'},{l:'Avaliação comercial',v:'R$ 3.800,00'}]},
   inspecao_predial:{label:'Inspeção Técnica Predial',titulo:'Proposta de honorários – Inspeção Técnica',apres:'bulleted',prazo_def:'40 dias úteis após a realização da última vistoria técnica',val_def:15,escopo:['Etapa 1: Análise documental preliminar e levantamento de informações técnicas do edifício;','Etapa 2: Vistoria técnica presencial nas áreas comuns, fachadas e sistemas construtivos visíveis, com auxílio de drone quando necessário;','Etapa 3: Registro fotográfico técnico e mapeamento das manifestações patológicas observadas;','Etapa 4: Análise e classificação das ocorrências quanto ao grau de criticidade (urgência, gravidade, tendência e risco);','Etapa 5: Elaboração do Laudo Técnico de Inspeção Predial com diagnóstico, recomendações e emissão da ART.'],hon:'O valor dos honorários foi definido considerando a complexidade técnica do serviço, o tempo profissional dedicado às atividades de vistoria, análise e diagnóstico das condições da edificação, bem como os recursos técnicos necessários. A composição dos honorários observa parâmetros de referência adotados pelo SENGE-SC e IBAPE-SC.',entrega:'O Laudo Técnico de Inspeção Predial, acompanhado do registro fotográfico e da respectiva ART, será entregue em formato digital (PDF).',precos:[{l:'Inspeção residencial (6h)',v:'R$ 905,00'},{l:'Inspeção predial condomínio',v:'R$ 3.500,00'},{l:'Inspeção com drone',v:'R$ 5.000,00'}]},
-  levantamento_topografico:{label:'Levantamento Topográfico',titulo:'Proposta de honorários – Levantamento topográfico',apres:'padrao',prazo_def:'20 dias úteis após o início do serviço',val_def:30,escopo:['Etapa 1: Coleta de dados geométricos referentes ao polígono do imóvel; levantamento cadastral das ruas, calçadas adjacentes e edificações;','Etapa 2: Processamento de dados em escritório;','Etapa 3: Elaboração da Planta Planialtimétrica do imóvel;','Etapa 4: Elaboração do Memorial Descritivo do imóvel;','Etapa 5: Emissão da ART/RRT e entrega do levantamento topográfico.'],hon:'O valor deste serviço foi calculado com base na complexidade das atividades envolvidas e nos recursos necessários para sua execução. A composição segue as diretrizes de referência estabelecidas pelo SENGE-SC e pelo IBAPE-SC.',entrega:'Os documentos finais (planta, memorial descritivo e ART/RRT) serão entregues em formato digital (.pdf e .dwg).',precos:[{l:'Topografia simples',v:'R$ 3.500,00'},{l:'Topografia ±1.000 m² c/ L3',v:'R$ 8.585,00'},{l:'Ticket médio histórico',v:'R$ 10.850,00'}]},
+  levantamento_topografico:{label:'Levantamento Topográfico',titulo:'Proposta de honorários – Levantamento topográfico',apres:'padrao',prazo_def:'20 dias úteis após o início do serviço',val_def:30,escopo:['Etapa 1: Coleta de dados geométricos referentes ao polígono do imóvel; levantamento cadastral das ruas, calçadas adjacentes e edificações;','Etapa 2: Processamento de dados em escritório;','Etapa 3: Elaboração da Planta Planialtimétrica do imóvel;','Etapa 4: Elaboração do Memorial Descritivo do imóvel;','Etapa 5: Emissão da ART/RRT e entrega do levantamento topográfico.'],hon:'O valor deste serviço foi calculado com base na complexidade das atividades envolvidas e nos recursos necessários para sua execução. A composição segue as diretrizes de referência estabelecidas pelo SENGE-SC e pelo IBAPE-SC.',entrega:'Os documentos finais (planta, memorial descritivo e ART/RRT) serão entregues em formato digital (pdf e .dwg).',precos:[{l:'Topografia simples',v:'R$ 3.500,00'},{l:'Topografia ±Bullet 1.000 m² c/ L3',v:'R$ 8.585,00'},{l:'Ticket médio histórico',v:'R$ 10.850,00'}]},
   assistencia_judicial:{label:'Assistência Técnica Judicial',titulo:'Proposta de honorários – Assistência Técnica',apres:'padrao',prazo_def:'conforme cronograma processual definido em conjunto com o contratante',val_def:15,escopo:['Etapa 1: Estudo detalhado do processo e análise técnica da documentação dos autos;','Etapa 2: Elaboração de parecer técnico preliminar com base nos autos e documentos disponíveis;','Etapa 3: Diligências e levantamento de dados técnicos complementares, quando necessário;','Etapa 4: Análise técnica complementar e emissão de parecer final ou quesitos técnicos.'],hon:'O valor deste serviço foi calculado com base na complexidade técnica do processo, nas etapas previstas de análise, elaboração de pareceres e eventual necessidade de diligências. A composição segue as diretrizes de referência estabelecidas pelo SENGE-SC e pelo IBAPE-SC, bem como a Tabela de Honorários para Perícias Judiciais.',entrega:'Os documentos técnicos (pareceres, quesitos e laudos complementares) serão entregues em formato digital (.pdf), com emissão de ART quando aplicável.',precos:[{l:'Assistência Técnica (12h)',v:'R$ 2.585,00'},{l:'Perícia judicial completa (40h)',v:'R$ 8.616,00'}]},
   vistoria_vizinhanca:{label:'Vistoria de Vizinhança / Cautelar',titulo:'Proposta de honorários – Vistoria de Vizinhança',apres:'padrao',prazo_def:'10 dias úteis após a realização da última vistoria',val_def:30,escopo:['Etapa 1: Análise e estudo detalhado dos documentos fornecidos, levantamento e solicitação de informações complementares;','Etapa 2: Mapeamento dos imóveis lindeiros e responsáveis para marcação da vistoria ou envio de notificação;','Etapa 3: Vistoria 1 nos imóveis agendados e tentativa de contato com os vizinhos sem agendamento;','Etapa 4: Vistoria final 2 para imóveis frustrados na primeira tentativa, mediante notificação prévia;','Etapa 5: Caracterização geral, redação do laudo e emissão da ART.'],hon:'O valor deste serviço foi calculado com base na complexidade das atividades envolvidas e nos recursos necessários para sua execução. A composição segue as diretrizes de referência estabelecidas pelo SENGE-SC e pelo IBAPE-SC.',entrega:'O laudo será entregue em até o prazo previsto a contar da vistoria do imóvel, em formato digital (.pdf).',precos:[{l:'Vistoria Cautelar 1 imóvel (5h)',v:'R$ 754,00'},{l:'Vistoria Cautelar grau 2',v:'R$ 3.250,00'}]},
   recebimento_chaves:{label:'Inspeção Recebimento de Chaves',titulo:'Proposta de honorários – Inspeção Técnica',apres:'bulleted',prazo_def:'15 dias úteis após a realização da vistoria',val_def:15,escopo:['Etapa 1: Análise documental preliminar: projetos, memorial descritivo, ARTs/RRTs e termos de garantia quando disponibilizados;','Etapa 2: Vistoria técnica presencial do imóvel, com avaliação visual das condições de entrega em relação às boas práticas de engenharia e normas aplicáveis;','Etapa 3: Registro fotográfico técnico e identificação de não conformidades, falhas de acabamento e manifestações patológicas observadas;','Etapa 4: Classificação das ocorrências quanto à criticidade e prazo recomendado de resolução;','Etapa 5: Elaboração do Relatório Técnico de Inspeção com diagnóstico, registros e recomendações.'],hon:'O valor deste serviço foi calculado com base na complexidade das atividades envolvidas, considerando a extensão do imóvel, o tempo técnico dedicado à vistoria, registro e análise das ocorrências. A composição segue as diretrizes de referência estabelecidas pelo SENGE-SC e pelo IBAPE-SC.',entrega:'O Relatório Técnico de Inspeção será entregue em formato digital (.pdf), acompanhado de registro fotográfico.',precos:[{l:'Inspeção recebimento (apto)',v:'R$ 905,00'},{l:'Inspeção recebimento (obra)',v:'R$ 3.500,00'}]},
@@ -349,6 +366,15 @@ var APRES_BULLETED='A Mestre Engenharia é referência em avaliações, perícia
 var tipoSel = null;
 var imgLista = [];
 var setupTab_ativo = 'key';
+var modoPreco = 'unico';
+
+function setModoPreco(modo, el){
+  modoPreco = modo;
+  document.querySelectorAll('#honorarios-card .chip').forEach(function(c){c.classList.remove('sel');});
+  el.classList.add('sel');
+  document.getElementById('area-unico').style.display = modo==='unico' ? '' : 'none';
+  document.getElementById('area-planos').style.display = modo==='planos' ? '' : 'none';
+}
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 (function(){
@@ -604,10 +630,24 @@ async function gerarProposta(){
   if(!num){alert('Informe o número da proposta.');return;}
   var dest=document.getElementById('destinatario').value.trim();
   if(!dest){alert('Informe o destinatário.');return;}
-  var valor=document.getElementById('valor').value.trim();
-  if(!valor||valor==='R$ '){alert('Informe o valor dos honorários.');return;}
+  var planos=null;
+  var valor='';
+  if(modoPreco==='planos'){
+    var p30=document.getElementById('plano30').value.trim();
+    var p15=document.getElementById('plano15').value.trim();
+    var p7=document.getElementById('plano7').value.trim();
+    if(!p30||!p15||!p7){alert('Preencha os valores dos 3 planos.');return;}
+    planos=[
+      {nome:'Mestre 30D',sub:'Econômico · prazo estendido',valor:p30,vistoria:'10 dias úteis',laudo:'30 dias úteis'},
+      {nome:'Mestre 15D',sub:'Padrão · custo-benefício',valor:p15,vistoria:'5 dias úteis',laudo:'15 dias úteis'},
+      {nome:'Mestre 7D',sub:'Prioritário · entrega expressa',valor:p7,vistoria:'2 dias úteis',laudo:'7 dias úteis'}
+    ];
+    valor=p30+' / '+p15+' / '+p7;
+  } else {
+    valor=document.getElementById('valor').value.trim();
+    if(!valor||valor==='R$ '){alert('Informe o valor dos honorários.');return;}
+  }
   var pagto=document.getElementById('pagamento').value.trim();
-  if(!pagto){alert('Informe a forma de pagamento.');return;}
 
   var btn=document.getElementById('btn-gerar');
   btn.disabled=true;btn.textContent='Gerando com IA…';
@@ -645,7 +685,9 @@ async function gerarProposta(){
 
     var blob=await montarDocx({
       tipo:t,num:num,ano:document.getElementById('ano').value,
-      dest,valor,extenso,pagto,obsPagto,prazo,validade,dataFmt,apres,objetivo,obs,
+      dest:dest,valor:valor,extenso:extenso,pagto:pagto,obsPagto:obsPagto,
+      prazo:prazo,validade:validade,dataFmt:dataFmt,apres:apres,objetivo:objetivo,obs:obs,
+      planos:planos,
       eq_robson:document.getElementById('eq-robson').checked,
       eq_raquel:document.getElementById('eq-raquel').checked,
       eq_outro:document.getElementById('eq-outro').value.trim()
@@ -664,11 +706,39 @@ async function gerarProposta(){
 
 // ─── MONTAR DOCX ─────────────────────────────────────────────────────────────
 async function montarDocx(d, logoBuffer){
-  if(!window.docx||!window.docx.Document) throw new Error('Biblioteca docx não carregou. Verifique sua conexão com a internet e recarregue a página (F5).');
+  if(&window.docx||!window.docx.Document) throw new Error('Biblioteca docx não carregou. Verifique sua conexão com a internet e recarregue a página (F5).');
   var D=window.docx;
   var Doc=D.Document,Par=D.Paragraph,TR=D.TextRun,AT=D.AlignmentType,
       IR=D.ImageRun,Hdr=D.Header,Ftr=D.Footer,Pkr=D.Packer,
-      BS=D.BorderStyle,SZ=D.ShadingType,Tab=D.Tab,WO=D.WidthType;
+      BS=D.BorderStyle,SZ=D.ShadingType,Tab=D.Tab,WO=D.WidthType,
+      TBL=D.Table,TRW=D.TableRow,TC=D.TableCell;
+
+  function gerarTabelaPlanos(planos){
+    var bgs=['EBF5FB','EBF5FF','FFF8E7'];
+    var bdry={style:'single',size:4,color:'D1D5DB',space:0};
+    function cp(text,sz,bold,color,al){
+      return new Par({children:[new TR({text:text,font:FN,size:sz||22,bold:!!bold,color:color||BLK})],
+        alignment:al||AT.CENTER,spacing:{before:80,after:80}});
+    }
+    function mkCell(paras,bg){
+      return new TC({children:paras,
+        width:{size:3030,type:WO.DXA},
+        shading:{fill:bg||'FFFFFF',type:SZ.CLEAR,color:'auto'},
+        margins:{top:160,bottom:160,left:180,right:180},
+        borders:{top:bdry,bottom:bdry,left:bdry,right:bdry}});
+    }
+    var rows=[];
+    rows.push(new TRW({children:planos.map(function(p,i){
+      return mkCell([cp(p.nome,26,true,NAVY),cp(p.sub,18,false,'6B7280')],bgs[i]);
+    })}));
+    rows.push(new TRW({children:planos.map(function(p,i){
+      return mkCell([cp(p.valor,40,true,BLK)],bgs[i]);
+    })}));
+    rows.push(new TRW({children:planos.map(function(p,i){
+      return mkCell([cp('Vistoria: até '+p.vistoria,20,false,GRAY),cp('Laudo: até '+p.laudo,20,false,GRAY)],bgs[i]);
+    })}));
+    return new TBL({rows:rows,width:{size:9072,type:WO.DXA}});
+  }
 
   var NAVY='06253D',NAVY2='0B2545',GRAY='404040',GRAY2='222A35',BLK='1F1F1F';
   var FN='Segoe UI',FC='Cambria',FM='Cambria Math';
@@ -749,16 +819,17 @@ async function montarDocx(d, logoBuffer){
   children.push(h1('3','Honorários e Forma de Pagamento'));
   children.push(h2('Investimento, fases e marcos de pagamento'));
   children.push(corpo(d.tipo.hon));
-  children.push(new Par({children:[new TR({text:d.tipo.label,font:FN,size:24,bold:true,color:NAVY})],alignment:AT.CENTER,spacing:sp(240,80,276)}));
-  children.push(new Par({children:[new TR({text:'Investimento: '+d.valor,font:FN,size:64,bold:true,color:BLK})],alignment:AT.CENTER,spacing:sp(0,40,276)}));
-  if(d.extenso) children.push(new Par({children:[new TR({text:d.extenso,font:FN,size:24,color:GRAY})],alignment:AT.CENTER,spacing:sp(0,200,276)}));
-  children.push(new Par({children:[new TR({text:'Fluxo de pagamento:',font:FN,size:24,bold:true})],spacing:sp(120,80,276)}));
+  if(d.planos){
+    children.push(gerarTabelaPlanos(d.planos));
+  } else {
+    children.push(new Par({children:[new TR({text:d.tipo.label,font:FN,size:24,bold:true,color:NAVY})],alignment:AT.CENTER,spacing:sp(240,80,276)}));
+    children.push(new Par({children:[new TR({text:'Investimento: '+d.valor,font:FN,size:40,bold:true,color:BLK})],alignment:AT.CENTER,spacing:sp(0,40,276)}));
+    if(d.extenso) children.push(new Par({children:[new TR({text:d.extenso,font:FN,size:24,color:GRAY})],alignment:AT.CENTER,spacing:sp(0,200,276)}));
+  }
+  children.push(new Par({children:[new TR({text:'Condições de pagamento:',font:FN,size:24,bold:true})],spacing:sp(200,80,276)}));
   children.push(bullet2(d.pagto));
   if(d.obsPagto) children.push(bullet2(d.obsPagto));
-  children.push(new Par({children:[new TR({text:'Dados bancários para pagamento:',font:FN,size:24,bold:true})],spacing:sp(120,80,276)}));
-  children.push(bullet2('Banco Ailos (085) — Agência: 01066 — Conta Corrente: 365424'));
-  children.push(bullet2('PIX (CNPJ): 39.971.644/0001-62'));
-  children.push(bullet2('Titular: Mestre Engenharia'));
+  children.push(new Par({children:[new TR({text:'Pagamento via PIX (CNPJ): 39.971.644/0001-62 — Titular: Mestre Engenharia',font:FN,size:22,color:GRAY})],spacing:sp(80,200,276)}));
 
   // 4. PRAZO
   children.push(h1('4','Prazo de execução do serviço'));
@@ -788,8 +859,7 @@ async function montarDocx(d, logoBuffer){
   children.push(sigDetalhe('Nome: _______________________________   CPF: ___________________________'));
   children.push(new Par({children:[new TR({text:' ',font:FN,size:22})],spacing:sp(160,160,276)}));
   children.push(linhAceite('Testemunha 2: _________________________________________'));
-  children.push(sigNome('Eng. Bruno Felipe Moraes'));
-  children.push(sigDetalhe('CPF: 081.305.919-44'));
+  children.push(sigDetalhe('Nome: _______________________________   CPF: ___________________________'));
   children.push(new Par({children:[new TR({text:' ',font:FN,size:22})],spacing:sp(200,40,276)}));
   children.push(sigDetalhe('__________________________________________'));
   children.push(sigNome('Eng. Robson Schneider – Repr. Legal'));
@@ -855,4 +925,4 @@ function formatarDataHoje(){
 }
 </script>
 </body>
-</html>
+</
