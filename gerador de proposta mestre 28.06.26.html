@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Propostas — Mestre Engenharia</title>
+<script>
+function _docxFallback2(){
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js';
+  s.onerror=function(){document.getElementById('_docx-aviso').style.display='block';};
+  document.head.appendChild(s);
+}
+function _docxFallback1(){
+  var s=document.createElement('script');
+  s.src='https://unpkg.com/docx@8.5.0/build/index.umd.js';
+  s.onerror=_docxFallback2;
+  document.head.appendChild(s);
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js" onerror="_docxFallback1()"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#06253D;--navy2:#0B2545;--gold:#C9A84C;--gold-bg:#FBF5E6;
+  --bg:#F0F2F5;--white:#fff;--text:#1A2332;--muted:#6B7280;
+  --border:#E5E7EB;--r:14px;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+.hdr{background:var(--navy);padding:14px 28px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.hdr h1{color:#fff;font-size:1rem;font-weight:700;line-height:1.2}
+.hdr span{color:rgba(255,255,255,.55);font-size:.72rem}
+.hdr-badge{margin-left:auto;background:rgba(201,168,76,.18);border:1px solid rgba(201,168,76,.45);color:var(--gold);font-size:.7rem;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.hdr-key{margin-left:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.8);font-size:.7rem;padding:3px 10px;border-radius:20px;cursor:pointer;white-space:nowrap}
+main{max-width:860px;margin:22px auto;padding:0 14px;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--white);border-radius:var(--r);padding:22px 26px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.sec-hdr{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--gold)}
+.sec-ico{font-size:1rem}
+.sec-ttl{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--text)}
+label{display:block;font-size:.75rem;font-weight:700;color:var(--navy);margin-bottom:5px}
+.lbl-opt{font-weight:400;color:var(--muted);font-size:.68rem;margin-left:3px}
+.hint{font-size:.7rem;color:var(--muted);margin-bottom:7px;line-height:1.45}
+input[type=text],input[type=number],input[type=date],input[type=password],textarea{
+  width:100%;padding:9px 13px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:.84rem;font-family:inherit;color:var(--text);background:var(--white);
+  transition:border .2s,box-shadow .2s;
+}
+input:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.15)}
+textarea{resize:vertical;min-height:80px;line-height:1.5}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:580px){.row2,.row3{grid-template-columns:1fr}}
+.field{margin-bottom:14px}
+
+/* CHIPS */
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.chip{padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);font-size:.76rem;color:var(--muted);background:var(--white);cursor:pointer;transition:all .15s;line-height:1.4;font-family:inherit}
+.chip:hover{border-color:var(--gold);color:var(--text)}
+.chip.sel{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:700}
+.num-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.nc{padding:7px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:.82rem;color:var(--text);background:var(--white);cursor:pointer;transition:all .15s;min-width:46px;text-align:center;font-family:inherit}
+.nc:hover{border-color:var(--gold)}
+.nc.sel{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:700}
+.price-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pc{padding:4px 12px;border-radius:20px;border:1px solid #BFDBFE;font-size:.72rem;color:#1E40AF;background:#EFF6FF;cursor:pointer;transition:all .15s;font-family:inherit}
+.pc:hover{background:#1D4ED8;color:#fff;border-color:#1D4ED8}
+
+/* EQUIPE CARDS */
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:540px){.team-grid{grid-template-columns:1fr}}
+.tc{border:1.5px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .18s;display:flex;gap:10px;align-items:flex-start;background:var(--white)}
+.tc:hover{border-color:var(--gold)}
+.tc.sel{border-color:var(--gold);background:var(--gold-bg)}
+.tc input[type=checkbox]{width:16px;height:16px;accent-color:var(--gold);flex-shrink:0;margin-top:2px;cursor:pointer}
+.tc-name{font-size:.83rem;font-weight:700;color:var(--navy);margin-bottom:3px}
+.tc-role{font-size:.7rem;color:var(--muted);line-height:1.4}
+
+/* UPLOAD / IMGS */
+.upload-area{border:2px dashed var(--border);border-radius:8px;padding:14px;text-align:center;cursor:pointer;background:#FAFAFA;position:relative;transition:border .2s}
+.upload-area:hover{border-color:var(--gold);background:var(--gold-bg)}
+.upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-area p{font-size:.78rem;color:var(--muted)}
+#imgs-preview{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.tw{position:relative;display:inline-flex}
+.tw img{width:64px;height:64px;object-fit:cover;border-radius:6px;border:2px solid var(--border)}
+.tw .pico{width:64px;height:64px;background:#FEE2E2;border-radius:6px;border:2px solid #FECACA;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:1.5rem}
+.tw .pico small{font-size:.55rem;color:#DC2626;font-weight:700}
+.tw .rm{position:absolute;top:-6px;right:-6px;background:#EF4444;color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:.72rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#ia-res{display:none;margin-top:12px;padding:12px 14px;background:#EFF6FF;border-radius:8px;border:1px solid #BFDBFE;font-size:.78rem;line-height:1.5}
+#ia-res h3{color:var(--navy);font-size:.78rem;font-weight:700;margin-bottom:6px}
+#ia-res .pergs{margin-top:8px;padding:8px;background:#FEF3C7;border-radius:6px;color:#92400E;font-size:.74rem}
+
+/* BTNS */
+.btn{padding:9px 20px;border-radius:8px;font-size:.83rem;font-weight:600;cursor:pointer;border:none;transition:opacity .15s;font-family:inherit}
+.btn:disabled{opacity:.4;cursor:default}
+.btn-p{background:var(--navy2);color:#fff}
+.btn-p:hover:not(:disabled){opacity:.88}
+.btn-s{background:transparent;border:1.5px solid var(--border);color:var(--text)}
+.btn-s:hover:not(:disabled){border-color:var(--gold);color:var(--navy)}
+.btn-row{display:flex;gap:9px;margin-top:12px;flex-wrap:wrap}
+#btn-gerar{width:100%;padding:15px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:800;cursor:pointer;letter-spacing:.3px;transition:background .2s;font-family:inherit}
+#btn-gerar:hover:not(:disabled){background:var(--navy2)}
+#btn-gerar:disabled{opacity:.4;cursor:default}
+#status{display:none;padding:16px;border-radius:10px;font-size:.84rem;text-align:center;border:1px solid}
+#status.load{background:#EFF6FF;border-color:#BFDBFE;color:var(--navy)}
+#status.ok{background:#F0FDF4;border-color:#BBF7D0;color:#166534}
+#status.err{background:#FEF2F2;border-color:#FECACA;color:#991B1B}
+.spin{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(6,37,61,.15);border-top-color:var(--navy);border-radius:50%;animation:sp .75s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.dl-links{display:flex;gap:9px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.dl-btn{padding:9px 20px;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;border:none;text-decoration:none;display:inline-block;font-family:inherit}
+.dl-primary{background:var(--navy);color:#fff}
+.dl-secondary{background:#F3F4F6;color:var(--text);border:1px solid var(--border)}
+
+/* SETUP MODAL */
+#setup-ov{position:fixed;inset:0;background:rgba(6,37,61,.88);z-index:999;display:none;align-items:center;justify-content:center}
+#setup-ov.show{display:flex}
+.sbox{background:#fff;border-radius:16px;padding:28px;max-width:440px;width:90%}
+.sbox h2{color:var(--navy);font-size:1.05rem;font-weight:700;margin-bottom:8px}
+.sbox p{font-size:.8rem;color:var(--muted);margin-bottom:16px;line-height:1.55}
+.sbox .field{margin-bottom:14px}
+.sbox small{display:block;font-size:.68rem;color:var(--muted);margin-top:4px}
+#logo-prev{max-height:56px;max-width:220px;display:none;margin-top:8px;border:1px solid var(--border);border-radius:6px;padding:4px}
+.tabs{display:flex;gap:0;margin-bottom:20px;border:1.5px solid var(--border);border-radius:8px;overflow:hidden}
+.tab{flex:1;padding:8px;font-size:.78rem;font-weight:600;cursor:pointer;background:transparent;border:none;color:var(--muted);font-family:inherit;transition:all .15s}
+.tab.active{background:var(--navy);color:#fff}
+.hdr-logo{display:flex;align-items:center;flex-shrink:0}
+.hdr-sep{width:1px;height:36px;background:rgba(255,255,255,.15);margin:0 8px}
+</style>
+</head>
+<body>
+
+<div id="_docx-aviso" style="display:none;background:#FEF2F2;border-bottom:2px solid #FECACA;padding:10px 20px;text-align:center;font-size:.82rem;color:#991B1B;font-family:'Segoe UI',sans-serif">
+  ⚠ Biblioteca de geração .docx não carregou. Verifique sua conexão com a internet e recarregue a página (F5).
+</div>
+
+<div id="setup-ov">
+  <div class="sbox">
+    <h2>Configuração</h2>
+    <div class="tabs">
+      <button class="tab active" onclick="setupTab('key',this)">Chave da API</button>
+      <button class="tab" onclick="setupTab('logo',this)">Logo</button>
+    </div>
+    <div id="tab-key">
+      <p>Informe sua chave da API Claude (Anthropic). Ela é salva localmente neste navegador e nunca é enviada para outro lugar.</p>
+      <div class="field">
+        <label>Chave da API</label>
+        <input type="password" id="api-key-input" placeholder="sk-ant-api03-...">
+        <small>Acesse: console.anthropic.com → API Keys</small>
+      </div>
+    </div>
+    <div id="tab-logo" style="display:none">
+      <p>Faça upload do logo lateral da Mestre Engenharia para aparecer nas propostas .docx geradas.</p>
+      <div class="field">
+        <label>Logo (PNG recomendado)</label>
+        <div class="upload-area" style="cursor:pointer">
+          <input type="file" accept="image/*" onchange="carregarLogo(this)">
+          <p>Clique para selecionar o logo</p>
+        </div>
+        <img id="logo-prev" alt="Logo preview">
+        <small id="logo-status">Nenhum logo carregado. O .docx será gerado sem logo no cabeçalho.</small>
+      </div>
+    </div>
+    <button class="btn btn-p" style="width:100%;margin-top:4px" onclick="salvarSetup()">Salvar e continuar</button>
+  </div>
+</div>
+
+<div class="hdr">
+  <div class="hdr-logo">
+    <svg viewBox="30 70 400 115" height="44" xmlns="http://www.w3.org/2000/svg"><g fill="#fff"><polygon points="77.02 74.64 37.14 86.58 37.14 135.53 40.03 136.4 40.03 88.65 75.68 77.99 76.31 147.26 77.02 147.47 77.72 147.26 78.41 77.99 114.02 88.65 114.02 136.4 116.91 135.53 116.91 86.58 77.02 74.64"/><polygon points="77.03 180.48 37.14 168.54 37.14 143.05 40.03 143.92 40.03 166.47 75.71 177.13 76.31 154.78 77.02 155 77.72 154.79 78.34 177.13 114.02 166.47 114.02 143.92 116.91 143.05 116.91 168.54 77.03 180.48"/><polygon points="70.26 84.13 44.43 92.06 44.23 91.38 70.26 84.13"/><polygon points="46.64 90.84 46.29 131.3 45.93 90.84 46.64 90.84"/><polygon points="44.68 91.72 44.33 134.2 43.97 91.72 44.68 91.72"/><polygon points="71.78 167.12 45.54 160.07 45.74 159.39 71.78 167.12"/><polygon points="71.78 170.99 45.27 163.58 45.47 162.9 71.78 170.99"/><polygon points="45.02 163.24 45.37 135.41 45.73 163.24 45.02 163.24"/><polygon points="70.3 88.06 44.38 95.72 44.19 95.04 70.3 88.06"/><polygon points="83.79 84.13 109.82 91.38 109.63 92.06 83.79 84.13"/><polygon points="108.12 90.84 107.76 131.3 107.41 90.84 108.12 90.84"/><polygon points="110.08 91.72 109.72 134.2 109.37 91.72 110.08 91.72"/><polygon points="81.45 167.12 108.32 159.39 108.5 160.08 81.45 167.12"/><polygon points="81.45 170.99 108.58 162.9 108.77 163.58 81.45 170.99"/><polygon points="108.32 163.24 108.68 135.41 109.03 163.24 108.32 163.24"/><polygon points="83.75 88.06 109.86 95.04 109.67 95.72 83.75 88.06"/></g><text transform="translate(143.71 124.59) scale(1 .9)" fill="#fff" font-family="Montserrat-Medium,Montserrat,sans-serif" font-size="28.35" font-weight="500">MESTRE ENGENHARIA</text><text transform="translate(142.2 151.36)" fill="#fff" font-family="CenturyGothic,'Century Gothic',sans-serif" font-size="17.01" letter-spacing=".2em">AVALIAÇÕES E PERÍCIAS</text></svg>
+  </div>
+  <div class="hdr-sep"></div>
+  <div>
+    <h1>Gerador de Propostas</h1>
+    <span>Itajaí · SC</span>
+  </div>
+  <div class="hdr-badge">✦ Gera .docx</div>
+  <button class="hdr-key" onclick="abrirSetup()">⚙ Config</button>
+</div>
+
+<main>
+
+<!-- 1. BRIEFING -->
+<div class="card">
+  <div class="sec-hdr"><span class="sec-ico">🤖</span><span class="sec-ttl">Briefing Inteligente</span><span class="lbl-opt" style="margin-left:auto;font-size:.7rem;color:var(--muted)">opcional</span></div>
+  <div class="field">
+    <label>Texto, e-mail ou anotações</label>
+    <p class="hint">Cole qualquer informação sobre o serviço. A IA preenche o formulário automaticamente.</p>
+    <textarea id="txt-briefing" placeholder="Ex: O cliente João Silva precisa de uma avaliação do imóvel localizado na Rua das Flores, 100 – Itajaí, área de 280 m², fins de inventário. Valor esperado em torno de R$ 1.200,00..." rows="4"></textarea>
+  </div>
+  <div class="field">
+    <label>Imagens, prints ou PDFs <span class="lbl-opt">opcional</span></label>
+    <p class="hint">Anexe prints de WhatsApp, e-mail, documentos ou PDFs. A IA lê o conteúdo automaticamente.</p>
+    <div class="upload-area">
+      <input type="file" accept="image/*,application/pdf" multiple onchange="carregarArquivos(this)">
+      <p>+ Clique ou arraste arquivos · PNG, JPG, PDF · múltiplos permitidos</p>
+    </div>
+    <div id="imgs-preview"></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-p" id="btn-extrair" onclick="extrairBriefing()">⚡ Analisar com IA</button>
+    <button class="btn btn-s" onclick="limparBriefing()">Limpar</button>
+  </div>
+  <div id="ia-res"></div>
+</div>
+
+<!-- 2. TIPO -->
+<div class="card">
+  <div class="sec-hdr"><span class="sec-ico">📋</span><span class="sec-ttl">Tipo de Serviço</span></div>
+  <div class="chips" id="tipo-chips"></div>
+</div>
+
+<!-- 3. DADOS -->
+<div class="card">
+  <div class="sec-hdr"><span class="sec-ico">📝</span><span class="sec-ttl">Dados da Proposta</span></div>
+  <div class="row3 field">
+    <div><label>Número da proposta</label><input type="number" id="numero" placeholder="225" min="1"></div>
+    <div><label>Ano</label><input type="number" id="ano" placeholder="2026"></div>
+    <div><label>Data da proposta</label><input type="date" id="data_prop"></div>
+  </div>
+  <div class="field">
+    <label>Destinatário / Empresa contratante</label>
+    <p class="hint">Inclua a preposição: "do Sr. João Silva" ou "da Construtora ABC Ltda." ou "da Prefeitura de..."</p>
+    <input type="text" id="destinatario" placeholder="do Sr. / da Sra. / da Empresa ABC Ltda.">
+  </div>
+  <div class="field">
+    <label>Imóvel / Objeto do serviço</label>
+    <textarea id="detalhes" rows="2" placeholder="Endereço, área, matrícula, finalidade do serviço..."></textarea>
+  </div>
+</div>
+
+<!-- 4. HONORÁRIOS -->
+<div class="card">
+  <div class="sec-hdr"><span class="sec-ico">💰</span><span class="sec-ttl">Honorários e Pagamento</span></div>
+  <div class="field">
+    <label>Valor Total</label>
+    <input type="text" id="valor" placeholder="ex: 3.500,00" oninput="fmtValor(this)" onfocus="garantirRS(this)">
+    <div class="price-chips" id="price-chips"></div>
+  </div>
+  <div class="field">
+    <label>Forma de Pagamento</label>
+    <input type="text" id="pagamento" placeholder="Selecione abaixo ou escreva...">
+    <div class="chips">
+      <span class="chip" onclick="selChip('pagamento',this,'50% entrada + 50% na entrega do laudo')">50% entrada + 50% entrega</span>
+      <span class="chip" onclick="selChip('pagamento',this,'100% antecipado na assinatura da proposta')">100% antecipado na assinatura</span>
+      <span class="chip" onclick="selChip('pagamento',this,'100% na entrega do laudo')">100% na entrega do laudo</span>
+      <span class="chip" onclick="selChip('pagamento',this,'30% na assinatura + 70% na entrega do laudo')">30% na assinatura + 70% na entrega</span>
+      <span class="chip" onclick="selChip('pagamento',this,'2x sem juros: entrada + 30 dias')">2x sem juros (entrada + 30 dias)</span>
+      <span class="chip" onclick="selChip('pagamento',this,'3x iguais sem juros')">3x iguais sem juros</span>
+    </div>
+  </div>
+  <div class="field">
+    <label>Informações de Pagamento <span class="lbl-opt">opcional</span></label>
+    <input type="text" id="obs_pagamento" placeholder="Selecione abaixo ou escreva...">
+    <div class="chips">
+      <span class="chip" onclick="selChip('obs_pagamento',this,'PIX — CNPJ: 39.971.644/0001-62 (Mestre Engenharia)')">PIX — CNPJ Mestre Engenharia</span>
+      <span class="chip" onclick="selChip('obs_pagamento',this,'TED/DOC — dados bancários a confirmar')">TED/DOC — dados a confirmar</span>
+      <span class="chip" onclick="selChip('obs_pagamento',this,'Cartão de crédito via InfinitePay (link de pagamento)')">Cartão de crédito via InfinitePay</span>
+      <span class="chip" onclick="selChip('obs_pagamento',this,'Boleto bancário (prazo de compensação 3 dias úteis)')">Boleto bancário (prazo 3 dias úteis)</span>
+    </div>
+  </div>
+</div>
+
+<!-- 5. PRAZO E VALIDADE -->
+<div class="card">
+  <div class="sec-hdr"><span class="sec-ico">📅</span><span class="sec-ttl">Prazo e Validade</span></div>
+  <div class="row2">
+    <div>
+      <label>Prazo de Entrega <span class="lbl-opt">(dias úteis após a vistoria)</span></label>
+      <input type="text" id="prazo" placeholder="ex: 15 dias úteis após a vistoria" style="margin-bottom:8px">
+      <div class="num-chips">
+        <span class="nc" onclick="selNum('prazo',this,'3 dias úteis')">3</span>
+        <span class="nc" onclick="selNum('prazo',this,'5 dias úteis')">5</span>
+        <span class="nc" onclick="selNum('prazo',this,'7 dias úteis')">7</span>
+        <span class="nc" onclick="selNum('prazo',this,'10 dias úteis')">10</span>
+        <span class="nc" onclick="selNum('prazo',this,'15 dias úteis')">15</span>
+        <span class="nc" onclick="selNum('prazo',this,'20 dias úteis')">20</span>
+        <span class="nc" onclick="selNum('prazo',this,'30 dias úteis')">30</span>
+        <span class="nc" onclick="selNum('prazo',this,'45 dias úteis')">45</span>
+        <span class="nc" onclick="selNum('prazo',this,'60 dias úteis')">60</span>
+        <span class="nc" onclick="selNum('prazo',this,'90 dias úteis')">90</span>
+      </div>
+    </div>
+    <div>
+      <label>Validade da Proposta</label>
+      <input type="number" id="validade" value="30" style="margin-bottom:8px">
+      <div class="num-chips">
+        <span class="nc" onclick="selNum('validade',this,1)">1 dia</span>
+        <span class="nc" onclick="selNum('validade',this,2)">2 dias</span>
+        <span class="nc" onclick="selNum('validade',this,3)">3 dias</span>
+        <span class="nc" onclick="selNum('validade',this,5)">5 dias</span>
+        <span class="nc" onclick="selNum('validade',this,10)">10 dias</span>
+        <span class="nc" onclick="selNum('validade',this,15)">15 dias</span>
+        <span class="nc sel" onclick="selNum('validade',this,30)">30 dias</span>
+        <span class="nc" onclick="selNum('validade',this,45)">45 dias</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. EQUIPE -->
+<div class="card">
+  <div class="sec-hdr"><span class="sec-ico">👥</span><span class="sec-ttl">Equipe Técnica</span></div>
+  <div class="team-grid">
+    <div class="tc sel" id="tc-robson" onclick="toggleTC('eq-robson','tc-robson')">
+      <input type="checkbox" id="eq-robson" checked>
+      <div><div class="tc-name">Eng. Robson Schneider</div><div class="tc-role">Perito · Especialista em Avaliações de Imóveis, Perícia Judicial, Direito Imobiliário e Agrimensura · Mestre em Tecnologia Ambiental</div></div>
+    </div>
+    <div class="tc" id="tc-raquel" onclick="toggleTC('eq-raquel','tc-raquel')">
+      <input type="checkbox" id="eq-raquel">
+      <div><div class="tc-name">Eng. Raquel Marion</div><div class="tc-role">Perita · Especialista em Avaliações de Imóveis e Direito Imobiliário · Mestre em Gestão Territorial</div></div>
+    </div>
+    <div class="tc" style="cursor:default;align-items:center;grid-column:1/-1">
+      <div style="width:100%"><div class="tc-role" style="margin-bottom:6px">Outro profissional de apoio <span style="color:var(--muted);font-size:.67rem">(opcional)</span></div><input type="text" id="eq-outro" placeholder="Nome, título e especialidade" onclick="event.stopPropagation()" style="font-size:.8rem"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 7. OBS -->
+<div class="card">
+  <div class="sec-hdr"><span class="sec-ico">📎</span><span class="sec-ttl">Observações <span class="lbl-opt">opcional</span></span></div>
+  <textarea id="obs" rows="2" placeholder="Condições especiais, restrições técnicas, informações adicionais..."></textarea>
+</div>
+
+<button id="btn-gerar" onclick="gerarProposta()">Gerar Proposta .docx — Mestre Engenharia</button>
+<div id="status"></div>
+
+</main>
+
+<script>
+// ─── TEMPLATES ───────────────────────────────────────────────────────────────
+var TIPOS = {
+  avaliacao_imovel:{label:'Avaliação de Imóveis',titulo:'Proposta de honorários',apres:'padrao',prazo_def:'15 dias úteis após a realização da vistoria técnica',val_def:30,escopo:['Etapa 1: Solicitação e análise de documentos do imóvel, bem como coleta de informações complementares junto ao contratante;','Etapa 2: Vistoria técnica presencial no imóvel para levantamento das características construtivas, de uso e localização;','Etapa 3: Pesquisa de dados de mercado e coleta de amostras comparativas, conforme critérios e exigências da NBR 14653;','Etapa 4: Processamento dos dados e realização dos cálculos técnicos utilizando a metodologia definida na Norma de Avaliação de Bens da ABNT;','Etapa 5: Elaboração do Laudo de Avaliação Técnica, com emissão da Anotação de Responsabilidade Técnica (ART) junto ao CREA.'],hon:'O valor do presente serviço foi definido com base na complexidade das etapas envolvidas, considerando o tempo técnico necessário, realização de vistoria presencial, pesquisa de mercado, tratamento dos dados, elaboração do laudo e emissão da ART. A composição dos honorários segue os parâmetros de referência estabelecidos pelo SENGE-SC e pelo IBAPE-SC.',entrega:'O laudo de avaliação do imóvel será entregue em formato digital (.pdf), acompanhado da respectiva ART registrada no CREA.',precos:[{l:'Avaliação urbano simples (8h)',v:'R$ 1.204,00'},{l:'Avaliação urbano complexo (20h)',v:'R$ 3.013,00'},{l:'Avaliação rural ±50 ha (24h)',v:'R$ 3.616,00'},{l:'Avaliação comercial',v:'R$ 3.800,00'}]},
+  inspecao_predial:{label:'Inspeção Técnica Predial',titulo:'Proposta de honorários – Inspeção Técnica',apres:'bulleted',prazo_def:'40 dias úteis após a realização da última vistoria técnica',val_def:15,escopo:['Etapa 1: Análise documental preliminar e levantamento de informações técnicas do edifício;','Etapa 2: Vistoria técnica presencial nas áreas comuns, fachadas e sistemas construtivos visíveis, com auxílio de drone quando necessário;','Etapa 3: Registro fotográfico técnico e mapeamento das manifestações patológicas observadas;','Etapa 4: Análise e classificação das ocorrências quanto ao grau de criticidade (urgência, gravidade, tendência e risco);','Etapa 5: Elaboração do Laudo Técnico de Inspeção Predial com diagnóstico, recomendações e emissão da ART.'],hon:'O valor dos honorários foi definido considerando a complexidade técnica do serviço, o tempo profissional dedicado às atividades de vistoria, análise e diagnóstico das condições da edificação, bem como os recursos técnicos necessários. A composição dos honorários observa parâmetros de referência adotados pelo SENGE-SC e IBAPE-SC.',entrega:'O Laudo Técnico de Inspeção Predial, acompanhado do registro fotográfico e da respectiva ART, será entregue em formato digital (PDF).',precos:[{l:'Inspeção residencial (6h)',v:'R$ 905,00'},{l:'Inspeção predial condomínio',v:'R$ 3.500,00'},{l:'Inspeção com drone',v:'R$ 5.000,00'}]},
+  levantamento_topografico:{label:'Levantamento Topográfico',titulo:'Proposta de honorários – Levantamento topográfico',apres:'padrao',prazo_def:'20 dias úteis após o início do serviço',val_def:30,escopo:['Etapa 1: Coleta de dados geométricos referentes ao polígono do imóvel; levantamento cadastral das ruas, calçadas adjacentes e edificações;','Etapa 2: Processamento de dados em escritório;','Etapa 3: Elaboração da Planta Planialtimétrica do imóvel;','Etapa 4: Elaboração do Memorial Descritivo do imóvel;','Etapa 5: Emissão da ART/RRT e entrega do levantamento topográfico.'],hon:'O valor deste serviço foi calculado com base na complexidade das atividades envolvidas e nos recursos necessários para sua execução. A composição segue as diretrizes de referência estabelecidas pelo SENGE-SC e pelo IBAPE-SC.',entrega:'Os documentos finais (planta, memorial descritivo e ART/RRT) serão entregues em formato digital (.pdf e .dwg).',precos:[{l:'Topografia simples',v:'R$ 3.500,00'},{l:'Topografia ±1.000 m² c/ L3',v:'R$ 8.585,00'},{l:'Ticket médio histórico',v:'R$ 10.850,00'}]},
+  assistencia_judicial:{label:'Assistência Técnica Judicial',titulo:'Proposta de honorários – Assistência Técnica',apres:'padrao',prazo_def:'conforme cronograma processual definido em conjunto com o contratante',val_def:15,escopo:['Etapa 1: Estudo detalhado do processo e análise técnica da documentação dos autos;','Etapa 2: Elaboração de parecer técnico preliminar com base nos autos e documentos disponíveis;','Etapa 3: Diligências e levantamento de dados técnicos complementares, quando necessário;','Etapa 4: Análise técnica complementar e emissão de parecer final ou quesitos técnicos.'],hon:'O valor deste serviço foi calculado com base na complexidade técnica do processo, nas etapas previstas de análise, elaboração de pareceres e eventual necessidade de diligências. A composição segue as diretrizes de referência estabelecidas pelo SENGE-SC e pelo IBAPE-SC, bem como a Tabela de Honorários para Perícias Judiciais.',entrega:'Os documentos técnicos (pareceres, quesitos e laudos complementares) serão entregues em formato digital (.pdf), com emissão de ART quando aplicável.',precos:[{l:'Assistência Técnica (12h)',v:'R$ 2.585,00'},{l:'Perícia judicial completa (40h)',v:'R$ 8.616,00'}]},
+  vistoria_vizinhanca:{label:'Vistoria de Vizinhança / Cautelar',titulo:'Proposta de honorários – Vistoria de Vizinhança',apres:'padrao',prazo_def:'10 dias úteis após a realização da última vistoria',val_def:30,escopo:['Etapa 1: Análise e estudo detalhado dos documentos fornecidos, levantamento e solicitação de informações complementares;','Etapa 2: Mapeamento dos imóveis lindeiros e responsáveis para marcação da vistoria ou envio de notificação;','Etapa 3: Vistoria 1 nos imóveis agendados e tentativa de contato com os vizinhos sem agendamento;','Etapa 4: Vistoria final 2 para imóveis frustrados na primeira tentativa, mediante notificação prévia;','Etapa 5: Caracterização geral, redação do laudo e emissão da ART.'],hon:'O valor deste serviço foi calculado com base na complexidade das atividades envolvidas e nos recursos necessários para sua execução. A composição segue as diretrizes de referência estabelecidas pelo SENGE-SC e pelo IBAPE-SC.',entrega:'O laudo será entregue em até o prazo previsto a contar da vistoria do imóvel, em formato digital (.pdf).',precos:[{l:'Vistoria Cautelar 1 imóvel (5h)',v:'R$ 754,00'},{l:'Vistoria Cautelar grau 2',v:'R$ 3.250,00'}]},
+  recebimento_chaves:{label:'Inspeção Recebimento de Chaves',titulo:'Proposta de honorários – Inspeção Técnica',apres:'bulleted',prazo_def:'15 dias úteis após a realização da vistoria',val_def:15,escopo:['Etapa 1: Análise documental preliminar: projetos, memorial descritivo, ARTs/RRTs e termos de garantia quando disponibilizados;','Etapa 2: Vistoria técnica presencial do imóvel, com avaliação visual das condições de entrega em relação às boas práticas de engenharia e normas aplicáveis;','Etapa 3: Registro fotográfico técnico e identificação de não conformidades, falhas de acabamento e manifestações patológicas observadas;','Etapa 4: Classificação das ocorrências quanto à criticidade e prazo recomendado de resolução;','Etapa 5: Elaboração do Relatório Técnico de Inspeção com diagnóstico, registros e recomendações.'],hon:'O valor deste serviço foi calculado com base na complexidade das atividades envolvidas, considerando a extensão do imóvel, o tempo técnico dedicado à vistoria, registro e análise das ocorrências. A composição segue as diretrizes de referência estabelecidas pelo SENGE-SC e pelo IBAPE-SC.',entrega:'O Relatório Técnico de Inspeção será entregue em formato digital (.pdf), acompanhado de registro fotográfico.',precos:[{l:'Inspeção recebimento (apto)',v:'R$ 905,00'},{l:'Inspeção recebimento (obra)',v:'R$ 3.500,00'}]},
+  regularizacao:{label:'Regularização de Imóveis',titulo:'Proposta de honorários – Regularização de Imóveis',apres:'padrao',prazo_def:'estimado conforme órgão competente e complexidade da documentação',val_def:30,escopo:['Etapa 1: Análise da documentação disponível e identificação das pendências para regularização;','Etapa 2: Elaboração ou atualização dos documentos técnicos necessários (planta, memorial, laudos);','Etapa 3: Protocolo junto ao(s) órgão(s) competente(s) (Prefeitura, Cartório, Receita Federal, CREA, CBMSC, conforme o caso);','Etapa 4: Acompanhamento do processo junto aos órgãos até a emissão do documento final;','Etapa 5: Entrega da documentação regularizada ao contratante.'],hon:'O valor deste serviço foi calculado com base na complexidade das atividades envolvidas, número de etapas e órgãos envolvidos, tempo técnico dedicado e taxa de ART/RRT. A composição segue as diretrizes de referência estabelecidas pelo SENGE-SC e pelo IBAPE-SC.',entrega:'Os documentos serão entregues em formato digital (.pdf) ao término de cada etapa, conforme cronograma acordado.',precos:[{l:'Regularização urbana c/ sub',v:'R$ 15.530,00'},{l:'Regularização rural georreferenc.',v:'R$ 31.060,00'}]},
+  vistoria_locacao:{label:'Vistoria de Locação (Entrada/Saída)',titulo:'Proposta de honorários – Vistoria Técnica de Locação',apres:'padrao',prazo_def:'7 dias úteis após a vistoria',val_def:15,escopo:['Etapa 1: Análise da documentação fornecida e agendamento da vistoria com as partes envolvidas;','Etapa 2: Vistoria técnica presencial do imóvel, com levantamento detalhado das condições de cada cômodo;','Etapa 3: Registro fotográfico técnico sistematizado de todos os ambientes, instalações e equipamentos;','Etapa 4: Elaboração do Laudo de Vistoria com descrição do estado de conservação e registro das condições observadas.'],hon:'O valor deste serviço foi calculado com base nas características do imóvel, tempo de vistoria e elaboração do laudo. A composição segue as diretrizes de referência estabelecidas pelo SENGE-SC e pelo IBAPE-SC.',entrega:'O laudo de vistoria será entregue em formato digital (.pdf).',precos:[{l:'Vistoria locação simples',v:'R$ 800,00'},{l:'Vistoria locação detalhada',v:'R$ 1.200,00'}]},
+  laudo_pericial:{label:'Laudo / Parecer Técnico',titulo:'Proposta de honorários – Laudo Técnico',apres:'padrao',prazo_def:'20 dias úteis após vistoria e entrega de documentos',val_def:30,escopo:['Etapa 1: Análise da documentação técnica e informações fornecidas pelo contratante;','Etapa 2: Vistoria técnica presencial, quando necessária, com registro fotográfico;','Etapa 3: Pesquisa técnica e normativa aplicável ao objeto do laudo;','Etapa 4: Análise técnica das evidências coletadas e elaboração das conclusões periciais;','Etapa 5: Elaboração do Laudo/Parecer Técnico com emissão de ART.'],hon:'O valor deste serviço foi calculado com base na complexidade técnica do objeto, nas atividades de análise, vistoria e elaboração do documento técnico. A composição segue as diretrizes de referência estabelecidas pelo SENGE-SC e pelo IBAPE-SC.',entrega:'O laudo será entregue em formato digital (.pdf), acompanhado da respectiva ART registrada no CREA.',precos:[{l:'Laudo/Parecer técnico (20h)',v:'R$ 3.013,00'},{l:'Laudo com vistoria e ART',v:'R$ 3.616,00'}]}
+};
+
+var APRES_PADRAO='A Mestre Engenharia é uma empresa especializada em avaliações técnicas, perícias, projetos e elaboração de laudos nas áreas de engenharia civil, agronômica e ambiental. Com sede em Itajaí-SC e atuação nos estados do RS, SC e PR, contamos com corpo técnico qualificado, filiado ao Instituto Brasileiro de Avaliações e Perícias de Engenharia – IBAPE, oferecendo excelência em inspeção predial e residencial, avaliação de imóveis urbanos e rurais, avaliação de máquinas e equipamentos, topografia e regularização de imóveis.\n\nCom mais de 10 anos de experiência, prestamos suporte a advogados, proprietários de imóveis, empresas, construtoras, incorporadoras, seguradoras, administradoras de condomínio e instituições financeiras, garantindo segurança, confiabilidade e embasamento técnico em cada trabalho.\n\nNa esfera judicial, atuamos também como assistentes técnicos e peritos nomeados, colaborando com o Ministério Público e Tribunais de Justiça dos Estados de Santa Catarina, Paraná e Rio Grande do Sul, sempre com imparcialidade, ética e rigor técnico.\n\nAgradecemos a oportunidade de apresentar esta proposta de honorários. Nossa equipe, liderada pelo Eng. Robson Schneider, está preparada e entusiasmada para conduzir o trabalho com qualidade e comprometimento.';
+
+var APRES_BULLETED='A Mestre Engenharia é referência em avaliações, perícias, regularização e engenharia diagnóstica, com sede em Itajaí – SC e atuação em toda a região Sul do Brasil. Há mais de 10 anos, transformamos questões técnicas complexas em soluções seguras e juridicamente fundamentadas.\n\nExperiência e atuação técnica:\n• +1.000.000 m² de imóveis regularizados\n• +500 nomeações judiciais como perito nomeado\n• +1.000 laudos técnicos elaborados\n• +80 comarcas atendidas na região Sul\n• +R$ 2 bilhões em imóveis avaliados\n\nCorpo técnico filiado ao IBAPE, credenciado no CREA, com atuação pericial judicial e extrajudicial nos estados de SC, PR e RS.\n\nPrincipais áreas de atuação:\n• Regularização de imóveis\n• Avaliações de imóveis urbanos e rurais\n• Inspeções prediais e diagnósticos construtivos\n• Topografia e levantamentos com drones\n• Perícias técnicas e assistência técnica judicial\n\nAtendemos proprietários, empresas, construtoras, escritórios de advocacia, seguradoras e instituições financeiras. A equipe, coordenada pelo Eng. Robson Schneider e pela Eng. Raquel Marion de Franceschi, conduz cada trabalho com precisão técnica e comprometimento com o resultado.';
+
+// ─── ESTADO ──────────────────────────────────────────────────────────────────
+var tipoSel = null;
+var imgLista = [];
+var setupTab_ativo = 'key';
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+(function(){
+  var hoje = new Date();
+  document.getElementById('data_prop').value = hoje.toISOString().slice(0,10);
+  document.getElementById('ano').value = hoje.getFullYear();
+  renderTipos();
+  var logoSalvo = localStorage.getItem('mestre_logo_b64');
+  if (logoSalvo) {
+    document.getElementById('logo-prev').src = logoSalvo;
+    document.getElementById('logo-prev').style.display = 'block';
+    document.getElementById('logo-status').textContent = 'Logo carregado e salvo.';
+  }
+  if (!localStorage.getItem('mestre_api_key')) abrirSetup();
+  document.addEventListener('paste', function(e){
+    var items = (e.clipboardData||window.clipboardData).items;
+    for (var i=0;i<items.length;i++){
+      if(items[i].type.startsWith('image/')){
+        var b = items[i].getAsFile();
+        if(b) lerArquivo(b,'image/png');
+      }
+    }
+  });
+})();
+
+function renderTipos(){
+  var c = document.getElementById('tipo-chips');
+  Object.keys(TIPOS).forEach(function(k){
+    var d = document.createElement('span');
+    d.className='chip'; d.textContent=TIPOS[k].label;
+    d.onclick=function(){ selecionarTipo(k,d); };
+    c.appendChild(d);
+  });
+}
+
+function selecionarTipo(key,el){
+  tipoSel=key;
+  document.querySelectorAll('#tipo-chips .chip').forEach(function(c){c.classList.remove('sel');});
+  el.classList.add('sel');
+  var t=TIPOS[key];
+  var pEl=document.getElementById('prazo');
+  if(!pEl.value||pEl.value===pEl.placeholder) pEl.value=t.prazo_def;
+  pEl.placeholder=t.prazo_def;
+  document.getElementById('validade').value=t.val_def||30;
+  document.querySelectorAll('.nc[data-field="validade"]').forEach(function(n){n.classList.remove('sel');});
+  document.querySelectorAll('.nc').forEach(function(n){
+    if(n.getAttribute('data-fld')==='validade'&&parseInt(n.textContent)===t.val_def) n.classList.add('sel');
+  });
+  var pc=document.getElementById('price-chips');
+  pc.innerHTML='';
+  (t.precos||[]).forEach(function(p){
+    var s=document.createElement('span');
+    s.className='pc'; s.textContent=p.l+' → '+p.v;
+    s.onclick=function(){ document.getElementById('valor').value=p.v.startsWith('R$')?p.v:'R$ '+p.v; };
+    pc.appendChild(s);
+  });
+}
+
+// ─── UI HELPERS ──────────────────────────────────────────────────────────────
+function selChip(fieldId, el, val){
+  var siblings = el.parentElement.querySelectorAll('.chip');
+  siblings.forEach(function(c){c.classList.remove('sel');});
+  el.classList.add('sel');
+  document.getElementById(fieldId).value=val;
+}
+function selNum(fieldId, el, val){
+  var siblings = el.parentElement.querySelectorAll('.nc');
+  siblings.forEach(function(c){c.classList.remove('sel');});
+  el.classList.add('sel');
+  document.getElementById(fieldId).value=val;
+}
+function toggleTC(cbId, cardId){
+  var cb=document.getElementById(cbId);
+  cb.checked=!cb.checked;
+  document.getElementById(cardId).classList.toggle('sel',cb.checked);
+}
+function fmtValor(el){ var v=el.value.replace(/[^0-9,]/g,''); if(v) el.value='R$ '+v; }
+function garantirRS(el){ if(!el.value.startsWith('R$')) el.value='R$ '+el.value.replace(/R\$\s*/g,''); }
+
+// ─── SETUP ───────────────────────────────────────────────────────────────────
+function abrirSetup(){ document.getElementById('setup-ov').classList.add('show'); }
+function setupTab(name,el){
+  setupTab_ativo=name;
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  document.getElementById('tab-key').style.display=name==='key'?'':'none';
+  document.getElementById('tab-logo').style.display=name==='logo'?'':'none';
+}
+function carregarLogo(input){
+  if(!input.files[0]) return;
+  var r=new FileReader();
+  r.onload=function(e){
+    document.getElementById('logo-prev').src=e.target.result;
+    document.getElementById('logo-prev').style.display='block';
+    document.getElementById('logo-status').textContent='Logo carregado. Salve para confirmar.';
+    window._logoTemp=e.target.result;
+  };
+  r.readAsDataURL(input.files[0]);
+}
+function salvarSetup(){
+  var k=document.getElementById('api-key-input').value.trim();
+  if(k){
+    if(!k.startsWith('sk-')){ alert('Chave inválida (deve começar com "sk-")'); return; }
+    localStorage.setItem('mestre_api_key',k);
+  }
+  if(window._logoTemp) localStorage.setItem('mestre_logo_b64',window._logoTemp);
+  document.getElementById('setup-ov').classList.remove('show');
+}
+
+// ─── IMAGENS ─────────────────────────────────────────────────────────────────
+function carregarArquivos(input){ Array.from(input.files).forEach(function(f){lerArquivo(f,f.type);}); input.value=''; }
+function lerArquivo(file,mime){
+  var r=new FileReader();
+  r.onload=function(e){
+    var du=e.target.result;
+    var m=(du.match(/^data:([^;]+);base64,/)||[])[1]||mime||'image/png';
+    imgLista.push({base64:du.replace(/^data:[^;]+;base64,/,''),mimeType:m,dataUrl:du});
+    renderImagens();
+  };
+  r.readAsDataURL(file);
+}
+function renderImagens(){
+  var c=document.getElementById('imgs-preview'); c.innerHTML='';
+  imgLista.forEach(function(a,i){
+    var w=document.createElement('div'); w.className='tw';
+    if(a.mimeType==='application/pdf'){
+      w.innerHTML='<div class="pico"><span>📄</span><small>PDF</small></div>';
+    } else {
+      var img=document.createElement('img'); img.src=a.dataUrl; w.appendChild(img);
+    }
+    var rm=document.createElement('button'); rm.className='rm'; rm.textContent='×';
+    rm.onclick=(function(idx){return function(){imgLista.splice(idx,1);renderImagens();};})(i);
+    w.appendChild(rm); c.appendChild(w);
+  });
+}
+
+// ─── LOGO SVG → PNG PARA DOCX ────────────────────────────────────────────────
+var LOGO_SVG_DOCX='<svg viewBox="30 70 400 115" xmlns="http://www.w3.org/2000/svg"><g fill="#12253b"><polygon points="77.02 74.64 37.14 86.58 37.14 135.53 40.03 136.4 40.03 88.65 75.68 77.99 76.31 147.26 77.02 147.47 77.72 147.26 78.41 77.99 114.02 88.65 114.02 136.4 116.91 135.53 116.91 86.58 77.02 74.64"/><polygon points="77.03 180.48 37.14 168.54 37.14 143.05 40.03 143.92 40.03 166.47 75.71 177.13 76.31 154.78 77.02 155 77.72 154.79 78.34 177.13 114.02 166.47 114.02 143.92 116.91 143.05 116.91 168.54 77.03 180.48"/><polygon points="70.26 84.13 44.43 92.06 44.23 91.38 70.26 84.13"/><polygon points="46.64 90.84 46.29 131.3 45.93 90.84 46.64 90.84"/><polygon points="44.68 91.72 44.33 134.2 43.97 91.72 44.68 91.72"/><polygon points="71.78 167.12 45.54 160.07 45.74 159.39 71.78 167.12"/><polygon points="71.78 170.99 45.27 163.58 45.47 162.9 71.78 170.99"/><polygon points="45.02 163.24 45.37 135.41 45.73 163.24 45.02 163.24"/><polygon points="70.3 88.06 44.38 95.72 44.19 95.04 70.3 88.06"/><polygon points="83.79 84.13 109.82 91.38 109.63 92.06 83.79 84.13"/><polygon points="108.12 90.84 107.76 131.3 107.41 90.84 108.12 90.84"/><polygon points="110.08 91.72 109.72 134.2 109.37 91.72 110.08 91.72"/><polygon points="81.45 167.12 108.32 159.39 108.5 160.08 81.45 167.12"/><polygon points="81.45 170.99 108.58 162.9 108.77 163.58 81.45 170.99"/><polygon points="108.32 163.24 108.68 135.41 109.03 163.24 108.32 163.24"/><polygon points="83.75 88.06 109.86 95.04 109.67 95.72 83.75 88.06"/></g><text transform="translate(143.71 124.59) scale(1 .9)" fill="#12253b" font-family="Montserrat-Medium,Montserrat,sans-serif" font-size="28.35" font-weight="500">MESTRE ENGENHARIA</text><text transform="translate(142.2 151.36)" fill="#12253b" font-family="CenturyGothic,\'Century Gothic\',sans-serif" font-size="17.01" letter-spacing=".2em">AVALIAÇÕES E PERÍCIAS</text></svg>';
+
+async function svgToArrayBuffer(svgStr,w,h){
+  return new Promise(function(resolve){
+    var canvas=document.createElement('canvas');
+    canvas.width=w;canvas.height=h;
+    var ctx=canvas.getContext('2d');
+    var img=new Image();
+    var blob=new Blob([svgStr],{type:'image/svg+xml;charset=utf-8'});
+    var url=URL.createObjectURL(blob);
+    img.onload=function(){
+      ctx.clearRect(0,0,w,h);
+      ctx.drawImage(img,0,0,w,h);
+      URL.revokeObjectURL(url);
+      canvas.toBlob(function(b){
+        if(!b){resolve(null);return;}
+        var fr=new FileReader();
+        fr.onload=function(e){
+          var b64=e.target.result.replace(/^data:[^;]+;base64,/,'');
+          var bin=atob(b64);
+          var arr=new Uint8Array(bin.length);
+          for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+          resolve(arr.buffer);
+        };
+        fr.readAsDataURL(b);
+      },'image/png');
+    };
+    img.onerror=function(){resolve(null);};
+    img.src=url;
+  });
+}
+
+// ─── CLAUDE API ──────────────────────────────────────────────────────────────
+async function callClaude(messages,maxTokens){
+  var key=localStorage.getItem('mestre_api_key');
+  if(!key) throw new Error('Configure a chave da API Claude (botão ⚙ Config).');
+  var resp=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'x-api-key':key,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTokens||600,messages:messages})
+  });
+  var data=await resp.json();
+  if(!resp.ok) throw new Error(data.error?.message||'Erro API '+resp.status);
+  return data.content[0].text.trim();
+}
+
+// ─── EXTRAIR BRIEFING ────────────────────────────────────────────────────────
+async function extrairBriefing(){
+  var texto=document.getElementById('txt-briefing').value.trim();
+  if(!texto&&!imgLista.length){alert('Adicione texto ou imagem/PDF para a IA analisar.');return;}
+  var btn=document.getElementById('btn-extrair');
+  btn.disabled=true;btn.textContent='Analisando…';
+  try{
+    var tipos=Object.keys(TIPOS).map(function(k){return k+': '+TIPOS[k].label;}).join('\n');
+    var prompt='Analise o conteúdo e extraia informações para proposta técnica da Mestre Engenharia (Itajaí-SC).\n\n'+(texto?'TEXTO:\n"""\n'+texto+'\n"""':'(analise as imagens/PDFs)')+'\n\nTIPOS:\n'+tipos+'\n\nRetorne APENAS JSON: {"tipo":"<chave>","destinatario":"<preposição+nome>","detalhes_imovel":"<endereço/área/finalidade>","valor_sugerido":"<R$ valor ou null>","forma_pagamento":"<condição ou null>","perguntas":["<o que falta>"]}';
+    var content=[];
+    imgLista.forEach(function(a){
+      if(a.mimeType==='application/pdf') content.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:a.base64}});
+      else content.push({type:'image',source:{type:'base64',media_type:a.mimeType,data:a.base64}});
+    });
+    content.push({type:'text',text:prompt});
+    var txt=await callClaude([{role:'user',content:content}],700);
+    var match=txt.match(/\{[\s\S]*\}/);
+    if(!match) throw new Error('IA não retornou JSON válido.');
+    var d=JSON.parse(match[0]);
+    if(d.tipo&&TIPOS[d.tipo]){
+      var chips=document.querySelectorAll('#tipo-chips .chip');
+      var keys=Object.keys(TIPOS);
+      chips.forEach(function(c,i){if(keys[i]===d.tipo)c.click();});
+    }
+    if(d.destinatario) document.getElementById('destinatario').value=d.destinatario;
+    if(d.detalhes_imovel) document.getElementById('detalhes').value=d.detalhes_imovel;
+    if(d.valor_sugerido) document.getElementById('valor').value=d.valor_sugerido;
+    if(d.forma_pagamento) document.getElementById('pagamento').value=d.forma_pagamento;
+    var res=document.getElementById('ia-res'); res.style.display='block';
+    var html='<h3>✓ IA identificou:</h3>';
+    if(d.tipo&&TIPOS[d.tipo]) html+='<div>🔧 Tipo: <strong>'+TIPOS[d.tipo].label+'</strong></div>';
+    if(d.destinatario) html+='<div>👤 '+d.destinatario+'</div>';
+    if(d.detalhes_imovel) html+='<div>🏠 '+d.detalhes_imovel+'</div>';
+    if(d.valor_sugerido) html+='<div>💰 '+d.valor_sugerido+'</div>';
+    if(d.perguntas&&d.perguntas.length) html+='<div class="pergs"><strong>⚠ Informações em falta:</strong><br>'+d.perguntas.join('<br>')+'</div>';
+    res.innerHTML=html;
+  }catch(e){alert('Erro: '+e.message);}
+  btn.disabled=false;btn.textContent='⚡ Analisar com IA';
+}
+function limparBriefing(){
+  document.getElementById('txt-briefing').value='';
+  imgLista=[];renderImagens();
+  document.getElementById('ia-res').style.display='none';
+}
+
+// ─── VALOR POR EXTENSO ───────────────────────────────────────────────────────
+function valorExtenso(valorStr){
+  var limpo=String(valorStr||'').replace(/R\$\s*/gi,'').replace(/\s/g,'').replace(/\./g,'').replace(',','.');
+  var num=parseFloat(limpo);
+  if(isNaN(num)||num<=0) return '';
+  var un=['','um','dois','três','quatro','cinco','seis','sete','oito','nove','dez','onze','doze','treze','quatorze','quinze','dezesseis','dezessete','dezoito','dezenove'];
+  var dz=['','','vinte','trinta','quarenta','cinquenta','sessenta','setenta','oitenta','noventa'];
+  var cn=['','cento','duzentos','trezentos','quatrocentos','quinhentos','seiscentos','setecentos','oitocentos','novecentos'];
+  function m100(n){if(n<20)return un[n];var r=n%10;return r?dz[Math.floor(n/10)]+' e '+un[r]:dz[Math.floor(n/10)];}
+  function m1000(n){if(n===100)return 'cem';if(n<100)return m100(n);var r=n%100;return r?cn[Math.floor(n/100)]+' e '+m100(r):cn[Math.floor(n/100)];}
+  function mM(n){if(n<1000)return m1000(n);var m=Math.floor(n/1000),r=n%1000;var mil=m===1?'mil':m1000(m)+' mil';return r?mil+(r<100?' e ':', ')+m1000(r):mil;}
+  var inteiro=Math.floor(num),cents=Math.round((num-inteiro)*100),partes=[];
+  if(inteiro>=1000000){var mi=Math.floor(inteiro/1000000),ri=inteiro%1000000;partes.push(m1000(mi)+(mi===1?' milhão':' milhões'));if(ri)partes.push(mM(ri));}
+  else if(inteiro>0)partes.push(mM(inteiro));
+  var t=(partes.join(', ')||'zero').toUpperCase();
+  t+=inteiro===1?' REAL':' REAIS';
+  if(cents>0)t+=' E '+m100(cents).toUpperCase()+(cents===1?' CENTAVO':' CENTAVOS');
+  return '('+t+')';
+}
+
+// ─── GERAR PROPOSTA ──────────────────────────────────────────────────────────
+async function gerarProposta(){
+  if(!tipoSel){alert('Selecione o tipo de serviço.');return;}
+  var num=document.getElementById('numero').value.trim();
+  if(!num){alert('Informe o número da proposta.');return;}
+  var dest=document.getElementById('destinatario').value.trim();
+  if(!dest){alert('Informe o destinatário.');return;}
+  var valor=document.getElementById('valor').value.trim();
+  if(!valor||valor==='R$ '){alert('Informe o valor dos honorários.');return;}
+  var pagto=document.getElementById('pagamento').value.trim();
+  if(!pagto){alert('Informe a forma de pagamento.');return;}
+
+  var btn=document.getElementById('btn-gerar');
+  btn.disabled=true;btn.textContent='Gerando com IA…';
+  var sb=document.getElementById('status');
+  sb.className='load';sb.style.display='block';
+  sb.innerHTML='<span class="spin"></span> Gerando parágrafo de objetivo com IA…';
+
+  try{
+    var t=TIPOS[tipoSel];
+    var detalhes=document.getElementById('detalhes').value.trim();
+    var prompt='Você é assistente da Mestre Engenharia (Itajaí-SC). Escreva o parágrafo de OBJETIVO de uma proposta do tipo "'+t.label+'".\nDestinatário: '+dest+'\nDetalhes: '+detalhes+'\nRegras: máximo 4 frases técnicas objetivas, mencione local se fornecido, mencione norma se relevante, sem valores ou prazos, sem saudações. Retorne APENAS o parágrafo.';
+    var objetivo=await callClaude([{role:'user',content:prompt}],350);
+
+    sb.innerHTML='<span class="spin"></span> Montando e gerando arquivo .docx…';
+
+    var prazo=document.getElementById('prazo').value.trim()||t.prazo_def;
+    var validade=document.getElementById('validade').value||String(t.val_def||30);
+    var obsPagto=document.getElementById('obs_pagamento').value.trim();
+    var dataInput=document.getElementById('data_prop').value;
+    var dataFmt=dataInput?formatarData(dataInput):formatarDataHoje();
+    var apres=t.apres==='bulleted'?APRES_BULLETED:APRES_PADRAO;
+    var extenso=valorExtenso(valor);
+    var obs=document.getElementById('obs').value.trim();
+    var logoB64=localStorage.getItem('mestre_logo_b64');
+    var logoBuffer=null;
+    if(logoB64){
+      try{
+        var b64=logoB64.replace(/^data:[^;]+;base64,/,'');
+        var bin=atob(b64);
+        var arr=new Uint8Array(bin.length);
+        for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+        logoBuffer=arr.buffer;
+      }catch(e){}
+    }
+
+    var blob=await montarDocx({
+      tipo:t,num:num,ano:document.getElementById('ano').value,
+      dest,valor,extenso,pagto,obsPagto,prazo,validade,dataFmt,apres,objetivo,obs,
+      eq_robson:document.getElementById('eq-robson').checked,
+      eq_raquel:document.getElementById('eq-raquel').checked,
+      eq_outro:document.getElementById('eq-outro').value.trim()
+    },logoBuffer);
+
+    var url=URL.createObjectURL(blob);
+    var nome='Proposta '+num+'.'+document.getElementById('ano').value+' - '+t.label+'.docx';
+    sb.className='ok';
+    sb.innerHTML='✅ <strong>Proposta gerada!</strong><div class="dl-links"><a class="dl-btn dl-primary" href="'+url+'" download="'+nome+'">⬇ Baixar '+nome+'</a><a class="dl-btn dl-secondary" href="'+url+'" target="_blank">Abrir</a></div>';
+  }catch(e){
+    sb.className='err';
+    sb.innerHTML='❌ <strong>Erro:</strong> '+e.message;
+  }
+  btn.disabled=false;btn.textContent='Gerar Proposta .docx — Mestre Engenharia';
+}
+
+// ─── MONTAR DOCX ─────────────────────────────────────────────────────────────
+async function montarDocx(d, logoBuffer){
+  if(!window.docx||!window.docx.Document) throw new Error('Biblioteca docx não carregou. Verifique sua conexão com a internet e recarregue a página (F5).');
+  var D=window.docx;
+  var Doc=D.Document,Par=D.Paragraph,TR=D.TextRun,AT=D.AlignmentType,
+      IR=D.ImageRun,Hdr=D.Header,Ftr=D.Footer,Pkr=D.Packer,
+      BS=D.BorderStyle,SZ=D.ShadingType,Tab=D.Tab,WO=D.WidthType;
+
+  var NAVY='06253D',NAVY2='0B2545',GRAY='404040',GRAY2='222A35',BLK='1F1F1F';
+  var FN='Segoe UI',FC='Cambria',FM='Cambria Math';
+  var sp=function(bf,af,ln){return{before:bf||0,after:af||160,line:ln||276,lineRule:'auto'};};
+
+  function h1(num,texto){
+    return new Par({children:[new TR({text:(num?num+'. ':'')+texto,font:FN,size:32,bold:true,color:NAVY})],
+      alignment:AT.LEFT,spacing:{before:400,after:40}});}
+
+  function h2(texto){
+    return new Par({children:[new TR({text:texto,font:FC,size:26,color:GRAY,italics:true})],
+      alignment:AT.LEFT,spacing:{before:40,after:400}});}
+
+  function corpo(texto){
+    return new Par({children:[new TR({text:texto,font:FN,size:24,color:BLK})],
+      alignment:AT.BOTH,spacing:sp(0,160,276)});}
+
+  function bulletEscopo(etapa){
+    var ci=etapa.indexOf(':');
+    var tit=ci>-1?etapa.slice(0,ci+1):etapa;
+    var desc=ci>-1?' '+etapa.slice(ci+1).trim():'';
+    return new Par({
+      children:[
+        new TR({text:'◆  ',font:FM,size:24,bold:true,color:NAVY}),
+        new TR({text:tit,font:FN,size:24,bold:true,color:BLK}),
+        new TR({text:desc,font:FN,size:24,bold:false,color:BLK})
+      ],
+      alignment:AT.BOTH,spacing:sp(80,80,276)});}
+
+  function bullet2(texto){
+    return new Par({
+      children:[new TR({text:'•  '+texto,font:FN,size:24,color:BLK})],
+      alignment:AT.BOTH,spacing:sp(0,80,276),indent:{left:426}});}
+
+  function renderApres(texto){
+    var paras=[];
+    texto.split('\n').forEach(function(linha){
+      var l=linha.trim();
+      if(!l)return;
+      if(l.startsWith('•')) paras.push(bullet2(l.slice(1).trim()));
+      else if(l.endsWith(':')) paras.push(new Par({children:[new TR({text:l,font:FN,size:24,bold:true})],spacing:sp(160,40,276)}));
+      else paras.push(corpo(l));
+    });
+    return paras;
+  }
+
+  function linhAceite(texto){
+    return new Par({children:[new TR({text:texto,font:FN,size:22,color:BLK})],spacing:sp(0,80,276)});}
+  function sigNome(texto){
+    return new Par({children:[new TR({text:texto,font:FN,size:22,bold:true,color:NAVY})],spacing:sp(0,40,276)});}
+  function sigDetalhe(texto){
+    return new Par({children:[new TR({text:texto,font:FN,size:20,color:GRAY})],spacing:sp(0,40,276)});}
+
+  var children=[];
+
+  // CAPA
+  children.push(new Par({children:[new TR({text:d.tipo.titulo,font:FN,size:32,bold:true,color:NAVY})],alignment:AT.RIGHT,spacing:sp(0,80,276)}));
+  children.push(new Par({children:[new TR({text:'Proposta n° '+d.num+'.'+d.ano,font:FC,size:24,color:GRAY})],alignment:AT.RIGHT,spacing:sp(0,120,276)}));
+  children.push(new Par({children:[new TR({text:'Aos cuidados '+d.dest+',',font:FN,size:24,color:BLK})],alignment:AT.LEFT,spacing:sp(0,320,276)}));
+
+  // APRESENTAÇÃO
+  children.push(h1('','Apresentação'));
+  children.push(h2('Conheça mais sobre a empresa'));
+  renderApres(d.apres).forEach(function(p){children.push(p);});
+
+  // 1. OBJETIVO
+  children.push(h1('1','Objetivo'));
+  children.push(h2('O que você está contratando'));
+  children.push(corpo(d.objetivo));
+
+  // 2. ESCOPO
+  children.push(h1('2','Escopo do serviço'));
+  children.push(h2('Quais etapas contemplam o serviço'));
+  children.push(corpo('Execução de todos os serviços técnicos conforme exposto no escopo a seguir:'));
+  d.tipo.escopo.forEach(function(e){children.push(bulletEscopo(e));});
+
+  // 3. HONORÁRIOS
+  children.push(h1('3','Honorários e Forma de Pagamento'));
+  children.push(h2('Investimento, fases e marcos de pagamento'));
+  children.push(corpo(d.tipo.hon));
+  children.push(new Par({children:[new TR({text:d.tipo.label,font:FN,size:24,bold:true,color:NAVY})],alignment:AT.CENTER,spacing:sp(240,80,276)}));
+  children.push(new Par({children:[new TR({text:'Investimento: '+d.valor,font:FN,size:64,bold:true,color:BLK})],alignment:AT.CENTER,spacing:sp(0,40,276)}));
+  if(d.extenso) children.push(new Par({children:[new TR({text:d.extenso,font:FN,size:24,color:GRAY})],alignment:AT.CENTER,spacing:sp(0,200,276)}));
+  children.push(new Par({children:[new TR({text:'Fluxo de pagamento:',font:FN,size:24,bold:true})],spacing:sp(120,80,276)}));
+  children.push(bullet2(d.pagto));
+  if(d.obsPagto) children.push(bullet2(d.obsPagto));
+  children.push(new Par({children:[new TR({text:'Dados bancários para pagamento:',font:FN,size:24,bold:true})],spacing:sp(120,80,276)}));
+  children.push(bullet2('Banco Ailos (085) — Agência: 01066 — Conta Corrente: 365424'));
+  children.push(bullet2('PIX (CNPJ): 39.971.644/0001-62'));
+  children.push(bullet2('Titular: Mestre Engenharia'));
+
+  // 4. PRAZO
+  children.push(h1('4','Prazo de execução do serviço'));
+  children.push(h2('Prazo previsto e considerações importantes'));
+  children.push(corpo(d.tipo.entrega));
+
+  // 5. EQUIPE
+  children.push(h1('5','Da equipe técnica envolvida'));
+  children.push(h2('Profissionais envolvidos'));
+  if(d.eq_robson) children.push(bullet2('Eng. Robson Schneider — Perito, Especialista em Avaliações de Imóveis, Perícia Judicial, Direito Imobiliário e Agrimensura. Mestre em Tecnologia Ambiental.'));
+  if(d.eq_raquel) children.push(bullet2('Eng. Raquel Marion — Perita, Especialista em Avaliações de Imóveis e Direito Imobiliário. Mestre em Gestão Territorial.'));
+  if(d.eq_outro) children.push(bullet2(d.eq_outro));
+  children.push(bullet2('Outros profissionais de apoio da equipe Mestre Engenharia.'));
+
+  // 6. ACEITE
+  children.push(h1('6','Do aceite'));
+  children.push(h2('Aceite da proposta para início do trabalho'));
+  children.push(corpo('Esta proposta estará válida por '+d.validade+' dias a partir da data de emissão. Para manifestar seu aceite, o contratante deverá assinar e devolver este documento ou formalizar por escrito (e-mail ou mensagem) sua concordância:'));
+  children.push(new Par({children:[new TR({text:'Itajaí-SC, '+d.dataFmt+'.',font:FN,size:22,color:BLK})],alignment:AT.RIGHT,spacing:sp(160,240,276)}));
+  var destNome=d.dest.replace(/^(do\s+|da\s+|de\s+)/i,'').trim();
+  children.push(linhAceite('Aceite: _______________________________________________'));
+  children.push(sigNome(destNome));
+  children.push(sigDetalhe('CNPJ/CPF: ____________________________'));
+  children.push(sigDetalhe('Resp. Legal: _________________________   CPF: _______________________'));
+  children.push(new Par({children:[new TR({text:' ',font:FN,size:22})],spacing:sp(160,160,276)}));
+  children.push(linhAceite('Testemunha 1: _________________________________________'));
+  children.push(sigDetalhe('Nome: _______________________________   CPF: ___________________________'));
+  children.push(new Par({children:[new TR({text:' ',font:FN,size:22})],spacing:sp(160,160,276)}));
+  children.push(linhAceite('Testemunha 2: _________________________________________'));
+  children.push(sigNome('Eng. Bruno Felipe Moraes'));
+  children.push(sigDetalhe('CPF: 081.305.919-44'));
+  children.push(new Par({children:[new TR({text:' ',font:FN,size:22})],spacing:sp(200,40,276)}));
+  children.push(sigDetalhe('__________________________________________'));
+  children.push(sigNome('Eng. Robson Schneider – Repr. Legal'));
+  children.push(sigDetalhe('CNPJ: 39.971.644/0001-62'));
+
+  if(d.obs){
+    children.push(h1('','Observações'));
+    children.push(new Par({children:[new TR({text:d.obs,font:FN,size:24,italics:true,color:GRAY})],alignment:AT.BOTH,spacing:sp(0,160,276)}));
+  }
+
+  // CABEÇALHO — usa logo enviado pelo usuário ou SVG embutido
+  var hdrChildren=[];
+  var efLogoBuffer=logoBuffer;
+  if(!efLogoBuffer){
+    try{ efLogoBuffer=await svgToArrayBuffer(LOGO_SVG_DOCX,400,115); }catch(e){}
+  }
+  if(efLogoBuffer){
+    try{
+      hdrChildren.push(new Par({children:[new IR({data:efLogoBuffer,transformation:{width:232,height:67}})],alignment:AT.LEFT,spacing:{before:0,after:80}}));
+    }catch(e){
+      hdrChildren.push(new Par({children:[new TR({text:'MESTRE ENGENHARIA · AVALIAÇÕES E PERÍCIAS',font:FN,size:24,bold:true,color:NAVY})],spacing:{after:80}}));
+    }
+  } else {
+    hdrChildren.push(new Par({children:[new TR({text:'MESTRE ENGENHARIA · AVALIAÇÕES E PERÍCIAS',font:FN,size:24,bold:true,color:NAVY})],spacing:{after:80}}));
+  }
+
+  // RODAPÉ
+  var ftrChildren=[
+    new Par({
+      children:[new TR({text:'Rua João Bauer nº 498, Edifício Mirante do Porto, sala 810, Centro – Itajaí – SC',font:FN,size:18,bold:true,color:NAVY})],
+      alignment:AT.CENTER,
+      border:{top:{style:BS.SINGLE,size:4,color:NAVY,space:4}},
+      spacing:{before:80,after:40}
+    }),
+    new Par({
+      children:[new TR({text:'+55 (47) 3083-9548  ·  +55 (47) 99155-0224  ·  contato@mestreengenharia.com  ·  www.mestreengenharia.com',font:FN,size:16,color:GRAY2})],
+      alignment:AT.CENTER,spacing:{before:0,after:0}
+    })
+  ];
+
+  var doc=new Doc({
+    sections:[{
+      properties:{page:{margin:{top:1985,bottom:1701,left:1701,right:1418}}},
+      headers:{default:new Hdr({children:hdrChildren})},
+      footers:{default:new Ftr({children:ftrChildren})},
+      children:children
+    }]
+  });
+
+  return await Pkr.toBlob(doc);
+}
+
+// ─── UTILIDADES ──────────────────────────────────────────────────────────────
+function formatarData(iso){
+  var p=iso.split('-');
+  var m=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  return parseInt(p[2])+' de '+m[parseInt(p[1])-1]+' de '+p[0];
+}
+function formatarDataHoje(){
+  var h=new Date();
+  var m=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  return h.getDate()+' de '+m[h.getMonth()]+' de '+h.getFullYear();
+}
+</script>
+</body>
+</html>
